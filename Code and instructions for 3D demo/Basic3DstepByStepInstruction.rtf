@@ -1,0 +1,166 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1348\cocoasubrtf170
+{\fonttbl\f0\froman\fcharset0 Times-Roman;}
+{\colortbl;\red255\green255\blue255;\red164\green8\blue0;\red217\green11\blue0;\red102\green0\blue141;
+\red0\green45\blue153;\red0\green61\blue204;}
+{\info
+{\author Jarek Rossignac}
+{\*\company Georgia Tech}
+{\*\copyright 2012}}\margl1440\margr1440\vieww32680\viewh24300\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0\fs36 \cf0 Basic3DDemo\
+\
+(
+\b 1) Bigger canvas\
+i
+\b0 n setup():  \
+	size(800, 800, P3D); // (1)\
+\
+
+\b (2) Set-up 4 balls more nicely\
+
+\b0 Set 4 balls in a non-planar configuration\
+in setup():  \
+  B.addBall(P(100,0,0),10,magenta); // (2)\
+  B.addBall(P(0,100,0),10,green);\
+  B.addBall(P(0,0,100),10,cyan);\
+  B.addBall(P(-100,0,0),10,blue);\
+\
+
+\b (3) Draw a green Bezier curve\
+
+\b0 Start with a simple \cf2 LERP\cf0  between P0 and P1, using \cf3 P(A,t,B)\cf0 \
+and draw it as a series of balls.\
+in draw() (before showPickedBall):\
+   fill(green); for(float \cf2 s\cf0 =0; s<=1; s+=
+\b 0.1
+\b0 ) show(\cf3 P( B.G[0], s, B.G[1] )\cf0 ,\cf4 12\cf0 ); //(3)\
+\
+Then, replace the LERP by a thinner and more densely sampled parabola (BEZIER) curve \
+with control points P0, P1, P2:\
+Write a post evaluator on that curve\
+in pv3D write code that evaluates\cf2  OnParabola(A,B,C,s)\cf0 :\
+  pt OnParabola(pt A, pt B, pt C, float t)\{return\cf3  P(,t,)\cf0 ;\} //(3)\
+  pt OnParabola(pt A, pt B, pt C, float t)\{return \cf3 P(\cf5 P(,t,)\cf0 ,\cf2 t,\cf6 P(,t,)\cf2 )\cf0 ;\} //(3)\
+  pt OnParabola(pt A, pt B, pt C, float t)\{return \cf3 P(\cf5 P(\cf0 A\cf5 ,t,\cf0 B\cf5 )\cf0 ,\cf2 t,\cf6 P(\cf0 B\cf6 ,t,\cf0 C\cf6 )\cf2 )\cf0 ; \} //(3)\
+\
+Use it to draw the curve\
+in draw() replace with:\
+    fill(green); for(float \cf3 s\cf0 =0; s<=1; s+=
+\b 0.01
+\b0 ) show(\cf2 OnParabola\cf0 (B.G[0],B.G[1],B.G[2],\cf2 s\cf0 ),
+\b \cf4 2
+\b0 \cf0 ); //(3)\
+\
+
+\b (4) Use the Bezier formulation for animation of the left foot L (shown as a green ball) along that parabola\
+
+\b0 Count frames:\
+in basic3D (global)\
+	int f=0, maxf=120; //(4)\
+\
+Restart animation when f reaches max and map frame count f to a time t using a cos^2 slow-in/slow-out back&forth motion:\
+in draw() (before showBalls):\
+    f++;  if (f>maxf) f=0; //(4)\
+    float t=(1.-cos(PI*2*f/maxf))/2; //(4)\
+\
+In addition to drawing the parabola, show a slightly larger ball moving back&forth on the parabola \
+in draw() add:\
+    pt L = OnParabola(B.G[0],B.G[1],B.G[2],t);  fill(green); show(L,6); //(4)\
+\
+
+\b (5)Add the right foot R moving on a  red Bezier curve controlled by P1, P2, P3\
+
+\b0 in draw(), add \
+    fill(red); for(float s=0; s<=1; s+=0.01) show(OnParabola(B.G[1],B.G[2],B.G[3],s),2); //(5)\
+    pt R = OnParabola(B.G[1],B.G[2],B.G[3],t);  fill(red); show(R,6); //(5)\
+and show their \cf2 floor shadows \cf0 by squashing them and translating to the floor (see showShadow() in pv3D\
+    fill(green); \cf3 showShadow\cf0 (L,3,-w/2+2); fill(red); \cf2 showShadow\cf0 (R,3,-w/2+2); //(5)\
+\
+
+\b (6) Add a body center C that shifts back&forth from being above L to being above R\
+
+\b0 Show the midpoint between L and R as a small blue ball and show its shadow\
+in draw(), add\
+    pt X = P(L,.5,R); fill(blue); show(X,3); //(6)\
+and show its floor shadow\
+    pt X = P(L,.5,R); fill(blue); show(X,3);  showShadow(X,3,-w/2+2); //(6)\
+\
+Instead of the midpoint, have it shift using the \cf2 LERP as a function of t\cf0 \
+    pt X = \cf2 P(\cf0 L,\cf2 t\cf0 ,R\cf2 )\cf0 ; fill(blue); show(X,3); //(6)\
+ \
+Create the Up vertical vector and use it to to make the center C of the belly and show a big belly of radius 40\
+   vec Up = V(0,0,1); //(6)\
+    pt C = P(X,150,Up); fill(cyan); show(C,40);  //(6)\
+\
+
+\b (7) Show legs\
+
+\b0 Show the legs as caplets from the belly to the feet balls\
+in draw(), add\
+    showCaplet(C,40,L,6);  showCaplet(C,40,R,6);//(7)\
+\
+
+\b (8) Compute and show the forward direction as a grey arrow\
+
+\b0 Compute the forward vector:\
+   vec F = V(\'85); //(8)\
+ as a normalized version scaled by 50 \
+   vec F = V(50,U(\'85)); //(8)\
+ of a vector that is the cross product\
+   vec F = V(50,U(N(\'85))); //(8)\
+of the Up vector\
+   vec F = V(50,U(N(Up,)\'85)); //(8)\
+with a vector\
+   vec F = V(50,U(N(Up,V(\'85)))); //(8)\
+from R to L\
+   vec F = V(50,U(N(Up,V(R,L)))); //(8)\
+Then show F as a grey arrow that starts from point C\
+    fill(grey); arrow(C,F,5); //(8)\
+\
+
+\b (9) show plexus\
+
+\b0 Make a point P 50 above C and show it as a ball\
+   pt P = P(C,50,Up); show(P,10); // (9)\
+Switch color to magenta and show a caplet to the belly\
+   pt P = P(C,50,Up); show(P,10); fill(magenta); showCaplet(C,40,P,6); // (9)\
+\
+
+\b (10) Show shoulders\
+
+\b0 Make a vector Sr that we want to point right\
+    vec Sr = V(\'85); //(10)\
+Make it have length 50 by scaling by 50 a unit vector obtained by normalizing a vector\
+    vec Sr = V(50,U(\'85));  //(10)\
+that is the cross product\
+    vec Sr = V(50,U(N(\'85)));  //(10)\
+of Up and Forward (vector F)\
+    vec Sr = V(50,U(N(Up,F)));  //(10)\
+\
+Display as an arrow starting at P\
+    vec Sr = V(50,U(N(Up,F))); arrow(P,Sr,5); //(10)\
+\
+Compute and display the symmetric arrow pointing towards the left\
+    vec Sl = V(-50,U(N(Up,F))); arrow(P,Sl,5); //(10)\
+\
+
+\b (11) Shoulders\
+
+\b0 Make a point Q (head?) higher than P and show it as a ball\
+    pt Q = P(P,50,Up); fill(red); show(Q,10); //(11)\
+Show a caplet from it to the plexus\
+    showCaplet(Q,10,P,6); //(11)\
+Make a forward vector D\
+    vec D = \'85; \
+by rotating the normalized F\
+    vec D = R(U(F),\'85); \
+by an angle that varies with t between -1 and 1\
+    vec D = R(U(F),t*2-1,); \
+in the linear vector subspace spanned  by normalized versions of F and Sr\
+   vec D = R(U(F),t*2-1,U(F),U(Sr)); \
+Display it as a thin arrow (of radius 5) of length 50 starting at Q\
+    vec D = R(U(F),t*2-1,U(F),U(Sr)); arrow(Q,V(50,D),5); //(11)\
+\
+\
+}
