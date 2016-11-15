@@ -82,6 +82,6 @@ void displayFooter()  // Displays help text at the bottom
     scribeFooter(menu,0); 
     }
 
-String title ="3451 P3 2016: Dancer", name ="Jarek Rossignac",
+String title ="3451 P3 2016: Dancer", name ="Gabriel Galarza and Josh Jibillian",
        menu="?:help, !:picture, ~:(start/stop)capture, space:rotate, s/wheel:closer, f/F:refocus, a:anim, #:quit",
        guide="Control Points x/z:select&edit, e:exchange, q/p:copy, l/L:load, w/W:write, C/K:show caplet/cone"; // user's guide

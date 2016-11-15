@@ -24,9 +24,11 @@ void draw() {
   fill(grey);  showShadow(A,8);  showShadow(B,8); showShadow(C,8); 
 
   vec ForwardDirection = V(1,0,0);
+  vec BackDirection = V(-1,0,0);
   // Footprints shown as reg, green, blue disks on the floor 
   //showNaiveDancer(A, s, B, ForwardDirection);  // THIS CALLS YOUR CODE IN TAB "Dancer"
   showDancer(A, s, B, ForwardDirection);  // THIS CALLS YOUR CODE IN TAB "Dancer"
+  showDancer(P(B.x + 80, B.y + 80), s, P(A.x + 80, A.y + 80), BackDirection);
    
 
  

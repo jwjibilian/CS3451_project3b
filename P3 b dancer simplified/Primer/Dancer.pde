@@ -1,7 +1,7 @@
 // Student's should use this to render their model
 
 
-void showDancer(pt LeftFoot, float transfer, pt RightFoot, vec Forward)
+ pt showDancer(pt LeftFoot, float transfer, pt RightFoot, vec Forward)
   {
   float footRadius=3, kneeRadius = 6,  hipRadius=12 ; // radius of foot, knee, hip
   float hipSpread = hipRadius; // half-displacement between hips
@@ -9,6 +9,7 @@ void showDancer(pt LeftFoot, float transfer, pt RightFoot, vec Forward)
   float ankleBackward=10, ankleInward=4, ankleUp=6, ankleRadius=4; // ankle position with respect to footFront and size
   float pelvisHeight=10, pelvisForward=hipRadius/2, pelvisRadius=hipRadius*1.3; // vertical distance form BodyCenter to Pelvis 
   float LeftKneeForward = 20; // arbitrary knee offset for mid (B,H)
+  float torsoHeight = pelvisHeight + 10;
 
   vec Up = V(0,0,1); // up vector
   
@@ -68,7 +69,10 @@ void showDancer(pt LeftFoot, float transfer, pt RightFoot, vec Forward)
   fill(blue); sphere(Pelvis,pelvisRadius);
   capletSection(LeftHip,hipRadius,Pelvis,pelvisRadius);  
   capletSection(RightHip,hipRadius,Pelvis,pelvisRadius);  
-
+  
+  /*pt Torso = P(BodyCenter, torsoHeight *5, Up, pelvisForward, Forward);
+  fill(blue); sphere(Torso, pelvisRadius *5);*/
+  return BodyCenter;
   }
   
 void capletSection(pt A, float a, pt B, float b) { // cone section surface that is tangent to Sphere(A,a) and to Sphere(B,b)
