@@ -21,6 +21,20 @@ void showDancer(pt A, pt B, pt Ar, pt Br)
   
 void capletSection(pt A, pt B, float a, float b)  // cone section surface that is tangent to Sphere(A,a) and to Sphere(B,b)
   {
+      
+       float distance = d(A,B);
+       float x = (a*(a-b))/distance;
+       float x2 = (b*(b-a))/distance;
+       float y = (float)Math.sqrt((a*a)-(x*x));
+       float y2 =(float)Math.sqrt((b*b)-(x2*x2));
+       pt C = P(A);
+       C = P(C, (x/distance), V(A,B));
+       pt Cprime = P(C, -(y/distance), R(V(A,B)));
+  
+       pt D = P(B, -((b*(b-a))/distance)/distance, V(A,B));
+       pt Dprime = P(D,(y2/distance), R(V(A,B)));
+       coneSection(C,D,d(C,Cprime),d(D,Dprime));
+      
     // 4 short lines of code
     // including a call to coneSection() (see in tab "primitives"
   }  
